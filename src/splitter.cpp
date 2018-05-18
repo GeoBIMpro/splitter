@@ -3,6 +3,7 @@
 #include <cv_bridge/cv_bridge.h>
 
 image_transport::Publisher l_pub, r_pub;
+int img_height, img_width;
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
@@ -12,13 +13,13 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 	cv::Rect roi_left;
 	roi_left.x = 0;
 	roi_left.y = 0;
-	roi_left.width = 1280;
-	roi_left.height = 1024;
+	roi_left.width = img_width;
+	roi_left.height = img_height;
 	cv::Rect roi_right;
 	roi_right.x = 0;
-	roi_right.y = 1024;
-	roi_right.width = 1280;
-	roi_right.height = 1024;
+	roi_right.y = img_height;
+	roi_right.width = img_width;
+	roi_right.height = img_height;
 	cv_bridge::CvImage out_left;
 	cv_bridge::CvImage out_right;
 	out_left.header = cv_ptr->header;
@@ -46,6 +47,9 @@ int main(int argc, char **argv)
 
   l_pub = it.advertise("left/image_raw", 1);
   r_pub = it.advertise("right/image_raw", 1);
+
+  nh.getParam("image_height", img_height);
+  nh.getParam("image_width", img_width);
 
   ros::Subscriber image_sub = nh.subscribe("image", 1, &imageCallback);
 
